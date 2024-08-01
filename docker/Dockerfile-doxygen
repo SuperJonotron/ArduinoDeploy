@@ -1,0 +1,39 @@
+FROM ubuntu:20.04
+#Update before we do anything else
+RUN apt-get update
+
+#Get the CA certificates so we can validate packages
+RUN apt-get install ca-certificates -y --no-install-recommends
+
+#Uncomment this to install packages for debugging
+RUN apt-get install iputils-ping net-tools -y --no-install-recommends
+
+# Install all required supporting packages
+#   - make -> used to convert doxygen latex output to pdfs
+#	- dos2unix -> Used to fix window line endings for bash files
+RUN apt-get install make dos2unix -y --no-install-recommends
+
+#Install doxygen
+RUN apt-get -y install doxygen
+
+#Install basic latex packages
+RUN DEBIAN_FRONTEND=noninteractive apt-get install texlive-full -y
+
+#Create necessary directories
+RUN mkdir -p /doxygen/bin
+
+#Copy over the core files
+COPY doxygen/doxygen.conf /doxygen
+COPY doxygen/bin /doxygen/bin
+
+#Autogenerate a template for doxygen
+RUN doxygen -g doxygen.conf
+
+#Do I need this and make or just this?
+#RUN DEBIAN_FRONTEND=noninteractive apt-get install doxygen-latex -y --fix-missing
+
+# When developing in windows, bash files tend get
+# corrupted so we'll correct for this every time to be safe
+RUN find /doxygen/bin/ -type f -print0 | xargs -0 dos2unix
+
+ENTRYPOINT ["/doxygen/bin/genDoc.sh"]

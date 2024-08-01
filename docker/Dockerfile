@@ -8,7 +8,7 @@ RUN apt-get install ca-certificates -y --no-install-recommends
 #Uncomment this to install packages for debugging
 RUN apt-get install iputils-ping net-tools -y --no-install-recommends
 
-# Install all required packages
+# Install all required supporting packages
 #   - curl -> used to retrieve arduino packages
 #	- git -> used to retrieve arduino libraries
 #	- python3 -> required to use arduino-cli
@@ -22,6 +22,7 @@ RUN mkdir -p /arduino-cli
 RUN mkdir -p /sketch/out
 RUN mkdir -p /library/out
 RUN mkdir -p /arduino-deploy/bin
+RUN mkdir -p /doxygen
 
 #Move over all the core required files
 COPY arduino-cli/config /arduino-cli/config
@@ -44,6 +45,22 @@ RUN /arduino-cli/bin/install.sh
 #supported by this image
 RUN /arduino-cli/bin/configure.sh
 
+#Install doxygen
+RUN apt-get install doxygen -y --no-install-recommends
+
+#Autogenerate a template for doxygen
+#RUN doxygen -g doxygen.conf
+
+#Copy over the doxygen configuration file
+COPY doxygen/doxygen.conf /doxygen
+
+#Install make to convert doxygen latex output to pdfs
+RUN apt-get install make -y --no-install-recommends
+
+#Do I need this and make or just this?
+#RUN apt-get install doxygen-latex -y
+
+
 # Move over all files needed for compiling
 # Doing this after core files helps with faster
 # builds when modifying these files which happens
@@ -58,6 +75,7 @@ RUN chmod +x /arduino-cli/bin/*
 # When developing in windows, bash files tend get
 # corrupted so we'll correct for this every time to be safe
 RUN find arduino-cli/bin/ -type f -print0 | xargs -0 dos2unix
+
 
 ENTRYPOINT ["/arduino-deploy/bin/deploy.sh"]
 

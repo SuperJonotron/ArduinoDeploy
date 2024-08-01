@@ -41,9 +41,17 @@ function disablePrecompileOptions(){
 
 function precompile(){
 	enablePrecompileOptions
+	# Map known board and cpu naming differences so the .a file
+	# will be correctly detected for that hardware
+	CPU=$BOARD
+	if [[ $BOARD == "rp2040" ]];then
+		CPU="cortex-m0plus"
+	fi
 	#Make the directories to store the pre-compiled .a file
-	mkdir -p /$LIBRARY_PATH/src/$BOARD
-	mkdir -p /library/out/build/$BOARD
+	mkdir -p /$LIBRARY_PATH/src/$CPU
+	mkdir -p /library/out/build/$CPU
+	# Clear any existing /tmp files before compiling for this board
+	rm -r /tmp/arduino/sketches
 	find $LIBRARY_PATH/examples/*Precompile -prune -type d | while IFS= read -r d; do
 		# Delete all existing arduino tmp files so only one set of
 		# cached compiled files exist for proper resolving after compilation
@@ -56,13 +64,11 @@ function precompile(){
 		$CMD
 		SUCCESS=$(lastCommandFailed)
 		echo -e "\033[32mPrecompiled $d: \033[33m$SUCCESS \033[0m"
-		#Make the directories to store the pre-compiled .a file
-		mkdir -p /$LIBRARY_PATH/src/$BOARD
-		mkdir -p /library/out/build/$BOARD
 		#Extract and load precompiled .a file to the correct location
-		cd /tmp/arduino-sketch*
-		cp libraries/$LIBRARY/$LIBRARY.a $LIBRARY_PATH/src/$BOARD/lib$LIBRARY.a
-		cp libraries/$LIBRARY/$LIBRARY.a /library/out/build/$BOARD/lib$LIBRARY.a
+		cd /tmp/arduino/sketches/*
+		ls -al
+		cp libraries/$LIBRARY/$LIBRARY.a $LIBRARY_PATH/src/$CPU/lib$LIBRARY.a
+		cp libraries/$LIBRARY/$LIBRARY.a /library/out/build/$CPU/lib$LIBRARY.a
     done	
 }
 
@@ -153,6 +159,17 @@ cp $TOOL_PATH /library/out/tools
 cp -r /library/src $LIBRARY_PATH
 cp -r /library/examples $LIBRARY_PATH
 cp /library/library.properties $LIBRARY_PATH
+
+#Copy over the dependency libraries
+echo -e "Checking dependencies...\n"
+for dir in /library/dependencies/*/
+do
+	echo "Dependency: ${dir}"
+	cp -r "${dir}" $LIBRARIES
+done
+
+echo "Libraries:"
+ls -al $LIBRARIES
 
 if [ "$PRE_COMPILED" == true ];then
 	precompile

@@ -33,10 +33,8 @@ ARG="${1:-unset}"
 COMPILE=false
 GEN_DOC=false
 PRE_COMPILED=false
-FQBNS="esp8266:esp8266:nodemcuv2,esp32:esp32:nodemcu-32s"
+FQBNS="esp8266:esp8266:nodemcuv2,esp32:esp32:nodemcu-32s,rp2040:rp2040:rpipico"
 EXAMPLE=""
-
-
 
 #Validate the arguments when provided
 
@@ -105,5 +103,15 @@ if [ "$COMPILE" == true ];then
 fi
 
 if [ "$GEN_DOC" == true ];then
-	echo -e "Generating doc...\nDone"
+	echo -e "Generating doc...\n"
+	rm -r /library/out/doc
+	cp -r /library/src /doxygen/
+	cd /doxygen/src
+	doxygen /doxygen/doxygen.conf
+	mkdir -p /library/out/doc
+	ls -al /doxygen/src/latex
+	cd /doxygen/src/latex
+	make
+	cp -r /doxygen/src/html /library/out/doc/
+	echo -e "Doc Generated...\nDone"
 fi

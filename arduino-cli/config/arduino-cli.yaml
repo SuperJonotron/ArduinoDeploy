@@ -1,5 +1,5 @@
 board_manager:
-  additional_urls: [https://github.com/esp8266/Arduino/releases/download/2.7.4/package_esp8266com_index.json,https://dl.espressif.com/dl/package_esp32_index.json]
+  additional_urls: [https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json,https://github.com/esp8266/Arduino/releases/download/2.7.4/package_esp8266com_index.json,https://dl.espressif.com/dl/package_esp32_index.json]
 daemon:
   port: "50051"
 directories:

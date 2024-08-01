@@ -13,6 +13,10 @@ curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.
 #Initialize arduino-cli
 arduino-cli config init 
 
+#Replace file "/root/.arduino15/arduino-cli.yaml" created from init
+#with the added boards defined in additional_urls
+cp /arduino-cli/config/arduino-cli.yaml /root/.arduino15
+
 #Resolve the installed locations for arduino-cli
 DATA_PATH=$(arduino-cli config dump | grep "data:" | awk '{print $2}')
 USER_PATH=$(arduino-cli config dump | grep "user:" | awk '{print $2}')
@@ -21,7 +25,6 @@ USER_PATH=$(arduino-cli config dump | grep "user:" | awk '{print $2}')
 mkdir -p $USER_PATH/libraries
 LIBRARIES=$USER_PATH/libraries
 
-#Store the arduino global variables
 echo DATA_PATH="\""$DATA_PATH"\"">> /etc/environment 
 echo USER_PATH="\""$USER_PATH"\"">> /etc/environment 
 echo LIBRARIES="\""$LIBRARIES"\"">> /etc/environment 

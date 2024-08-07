@@ -29,4 +29,4 @@ case $ARG in
 esac
 
 echo "Building container for arduino-cli..."
-docker build -f docker/Dockerfile -t superjonotron/arduino-cli .
+docker build -f docker/Dockerfile -t superjonotron/arduino-deploy .

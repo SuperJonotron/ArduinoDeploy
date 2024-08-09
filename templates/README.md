@@ -21,11 +21,11 @@ This template is designed to use other public git repositories as libraries.  It
 
 When building a library that has external libraries, you can copy this template by modifying only two variables.
 
-In the externalDepLib.sh, update this line to be the name of your library:
+In the externalDepLib_build.sh, update this line to be the name of your library:
 
 `LIBRARY_NAME="LibraryName"` 
 
-Next, update the Libraries variable, by default no libraries are included.
+Next, update the LIBRARIES variable, by default no libraries are included.
 LIBRARIES=""
 
 And example is showin in the template and is duplicated here for quick reference
@@ -37,7 +37,7 @@ This would include the Time and Timezone libraries from this github account.  Th
 -	Check if a library by that name exists
 -	If it exists, do nothing.  Templates does not automatically check for latest git versions at this time.
 -	If it does not exist, clone the main branch of the repository.  Template does not currently support specifying which branch to checkout.
--	Once al git repositories are either confirmed or cloned, a docker mount is created for each one in the format:
+-	Once all git repositories are either confirmed or cloned, a docker mount is created for each one in the format:
 
 	`-v $DEPENDENCY_LOCATION:/library/dependencies/${array[0]}"`
 
